@@ -46,6 +46,16 @@ th{color:#9db5a7}
 </div>
 
 <!-- گروه‌ها -->
+  <div class="card">
+<h2>🏆 ویترین افتخارات تیم‌ها</h2>
+
+<p class="muted">
+افتخارات و قهرمانی‌های تیم‌ها
+</p>
+
+<div id="honorsShowcase"></div>
+
+</div>
 <div class="card">
 <h2>🗂️ مدیریت گروه‌ها</h2>
 
@@ -67,7 +77,24 @@ th{color:#9db5a7}
 
 <div id="teamList"></div>
 </div>
+<div class="card">
+<h2>🏅 ثبت افتخار تیم</h2>
 
+<select id="honorTeam"></select>
+
+<input
+id="honorTitle"
+placeholder="عنوان افتخار؛ مثلاً قهرمانی جام جلالوند">
+
+<input
+id="honorYear"
+placeholder="سال؛ مثلاً ۱۴۰۴">
+
+<button class="add" onclick="addHonor()">
+🏆 ثبت افتخار
+</button>
+
+</div>
 <!-- مسابقات -->
 <div class="card">
 <h2>📅 برنامه مسابقات</h2>
@@ -163,7 +190,9 @@ JSON.parse(localStorage.getItem("jalalvandGames"))
 let scorers=
 JSON.parse(localStorage.getItem("jalalvandScorers"))
 ||{};
-
+let honors=
+JSON.parse(localStorage.getItem("jalalvandHonors"))
+||{};
 
 /* ذخیره */
 
@@ -188,7 +217,7 @@ localStorage.setItem(
 "jalalvandScorers",
 JSON.stringify(scorers)
 );
-
+localStorage.setItem("jalalvandHonors",JSON.stringify(honors));
 render();
 
 }
@@ -395,7 +424,31 @@ save();
 
 
 /* مسابقه */
+function addHonor(){
 
+  let team = document.getElementById("honorTeam").value;
+  let title = document.getElementById("honorTitle").value.trim();
+  let year = document.getElementById("honorYear").value.trim();
+
+  if(!team || !title){
+    alert("تیم و عنوان افتخار را وارد کنید");
+    return;
+  }
+
+  if(!honors[team]){
+    honors[team] = [];
+  }
+
+  honors[team].push({
+    title: title,
+    year: year
+  });
+
+  document.getElementById("honorTitle").value = "";
+  document.getElementById("honorYear").value = "";
+
+  save();
+}
 function addGame(){
 
 let h=document.getElementById("homeTeam").value;
@@ -800,7 +853,10 @@ function renderSelects(){
 
 let h=document.getElementById("homeTeam");
 let a=document.getElementById("awayTeam");
-
+document.getElementById("honorTeam").innerHTML =
+  teams.map(t =>
+    `<option value="${t.name}">${t.name}</option>`
+  ).join("");
 h.innerHTML="";
 a.innerHTML="";
 
