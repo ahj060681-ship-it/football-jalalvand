@@ -2,24 +2,253 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>فوتبال جلالوند</title>
+
 <style>
-body{font-family:Arial;background:#07120e;color:white;text-align:center;padding:30px}
-.box{max-width:700px;margin:auto;background:#10271c;padding:30px;border-radius:20px}
+body{
+  margin:0;
+  background:#07120e;
+  color:white;
+  font-family:Tahoma,Arial;
+  padding:15px;
+}
+.box{
+  max-width:800px;
+  margin:auto;
+}
+.card{
+  background:#10271c;
+  border:1px solid #28513c;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:15px;
+}
 h1{color:#35d07f}
+input,button{
+  font:inherit;
+  border-radius:10px;
+  padding:11px;
+  margin:4px;
+}
+input{
+  width:calc(100% - 25px);
+  background:#07120e;
+  color:white;
+  border:1px solid #40604e;
+}
+button{
+  border:0;
+  font-weight:bold;
+  cursor:pointer;
+}
+.add{background:#35d07f}
+.edit{background:#e0b84d}
+.del{
+  background:#c74450;
+  color:white;
+}
+.team{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #28513c;
+  padding:10px 0;
+  gap:5px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,td{
+  padding:10px;
+  border-bottom:1px solid #28513c;
+  text-align:center;
+}
+th{color:#9db5a7}
 </style>
 </head>
+
 <body>
+
 <div class="box">
+
+<div class="card">
 <h1>⚽ فوتبال جلالوند</h1>
-<h2>لیگ محلی جلالوند</h2>
-<p>نتایج زنده • جدول لیگ • تیم‌ها</p>
-<hr>
-<h2>📊 جدول لیگ</h2>
-<p>تیم ۱ — ۰ امتیاز</p>
-<p>تیم ۲ — ۰ امتیاز</p>
-<p>تیم ۳ — ۰ امتیاز</p>
+<h3>لیگ محلی جلالوند</h3>
+<p>مدیریت تیم‌ها • جدول لیگ • نتایج</p>
 </div>
+
+<div class="card">
+<h2>⚙️ مدیریت تیم‌ها</h2>
+
+<input
+ id="teamName"
+ placeholder="نام تیم جدید را وارد کنید">
+
+<button class="add" onclick="addTeam()">
+➕ افزودن تیم
+</button>
+
+<div id="teams"></div>
+</div>
+
+<div class="card">
+<h2>📊 جدول لیگ</h2>
+
+<table>
+<thead>
+<tr>
+<th>رتبه</th>
+<th>تیم</th>
+<th>بازی</th>
+<th>امتیاز</th>
+</tr>
+</thead>
+
+<tbody id="table"></tbody>
+
+</table>
+</div>
+
+</div>
+
+<script>
+
+const defaultTeams = [
+"قبربابا",
+"دوردشت",
+"علیباقر",
+"دره بادام",
+"سرجوب",
+"قمر",
+"یاریجان",
+"الکه",
+"ده موسی",
+"پرگلی",
+"گلستان",
+"زمان",
+"تلل",
+"سرائیلان",
+"ده عباسیان",
+"خوبیاران"
+];
+
+let teams =
+JSON.parse(localStorage.getItem("jalalvandTeams"))
+|| defaultTeams;
+
+function save(){
+  localStorage.setItem(
+    "jalalvandTeams",
+    JSON.stringify(teams)
+  );
+  show();
+}
+
+function addTeam(){
+
+  let input =
+  document.getElementById("teamName");
+
+  let name =
+  input.value.trim();
+
+  if(!name){
+    alert("نام تیم را وارد کنید");
+    return;
+  }
+
+  teams.push(name);
+
+  input.value="";
+
+  save();
+}
+
+function editTeam(index){
+
+  let name =
+  prompt(
+    "نام جدید تیم:",
+    teams[index]
+  );
+
+  if(name && name.trim()){
+
+    teams[index] =
+    name.trim();
+
+    save();
+  }
+}
+
+function deleteTeam(index){
+
+  if(
+    confirm(
+      "آیا این تیم حذف شود؟"
+    )
+  ){
+
+    teams.splice(index,1);
+
+    save();
+  }
+}
+
+function show(){
+
+  document.getElementById("teams").innerHTML =
+  teams.map((team,index)=>`
+
+    <div class="team">
+
+      <span>
+      ${index+1}. ${team}
+      </span>
+
+      <div>
+
+        <button
+        class="edit"
+        onclick="editTeam(${index})">
+        ✏️ ویرایش
+        </button>
+
+        <button
+        class="del"
+        onclick="deleteTeam(${index})">
+        🗑 حذف
+        </button>
+
+      </div>
+
+    </div>
+
+  `).join("");
+
+  document.getElementById("table").innerHTML =
+  teams.map((team,index)=>`
+
+    <tr>
+
+      <td>${index+1}</td>
+
+      <td>${team}</td>
+
+      <td>0</td>
+
+      <td>0</td>
+
+    </tr>
+
+  `).join("");
+}
+
+show();
+
+</script>
+
 </body>
 </html>
