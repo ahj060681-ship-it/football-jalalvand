@@ -7,24 +7,31 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#07120e;color:#fff;font-family:Tahoma,Arial;padding:15px}
-.container{max-width:950px;margin:auto}
+.container{max-width:1000px;margin:auto}
 .card{background:#10271c;border:1px solid #28513c;border-radius:18px;padding:20px;margin-bottom:15px}
 h1{color:#35d07f}
-input,select,button{font:inherit;border-radius:10px;padding:11px;margin:4px}
+input,select,button{font:inherit;border-radius:10px;padding:10px;margin:4px}
 input,select{background:#07120e;color:#fff;border:1px solid #40604e}
 button{border:0;font-weight:bold;cursor:pointer}
 .add{background:#35d07f;color:#062014}
-.edit{background:#e0b84d}
-.delete{background:#c74450;color:white}
+.edit{background:#e0b84d;color:#111}
+.delete{background:#c74450;color:#fff}
+.live{background:#e53935;color:#fff}
+.dark{background:#294438;color:#fff}
 .item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #28513c;gap:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.game{background:#0b1b13;border:1px solid #28513c;border-radius:14px;padding:14px;margin:9px 0}
+.score{font-size:25px;color:#35d07f;font-weight:bold}
+.livebox{border:2px solid #e53935;background:#180d0d}
+.live-title{color:#ff5555;font-size:18px;font-weight:bold}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center}
+.stat{background:#07120e;border-radius:12px;padding:12px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:8px;border-bottom:1px solid #28513c;text-align:center}
+th{color:#9db5a7}
 .group{background:#0b1b13;border:1px solid #28513c;border-radius:14px;padding:12px;margin:10px 0}
 .group h3{color:#35d07f}
-table{width:100%;border-collapse:collapse}
-th,td{padding:9px 4px;border-bottom:1px solid #28513c;text-align:center}
-th{color:#9db5a7}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .muted{color:#9db5a7}
-.game{background:#0b1b13;border:1px solid #28513c;border-radius:12px;padding:12px;margin:8px 0}
 @media(max-width:600px){.grid{grid-template-columns:1fr}table{font-size:11px}}
 </style>
 </head>
@@ -35,9 +42,10 @@ th{color:#9db5a7}
 <div class="card">
 <h1>⚽ فوتبال جلالوند</h1>
 <h3>🏆 لیگ محلی جلالوند</h3>
-<p>مدیریت تیم‌ها • گروه‌ها • مسابقات • نتایج • جدول</p>
+<p>مدیریت تیم‌ها • گروه‌ها • برنامه مسابقات • بازی زنده • نتایج • جدول</p>
 </div>
 
+<!-- گروه‌ها -->
 <div class="card">
 <h2>🗂️ مدیریت گروه‌ها</h2>
 
@@ -49,46 +57,55 @@ th{color:#9db5a7}
 <div id="groupList"></div>
 </div>
 
+<!-- تیم‌ها -->
 <div class="card">
 <h2>👥 مدیریت تیم‌ها</h2>
 
-<input id="teamInput" placeholder="نام تیم جدید">
+<input id="teamInput" placeholder="نام تیم">
 
-<button class="add" onclick="addTeam()">
-➕ افزودن تیم
-</button>
+<button class="add" onclick="addTeam()">➕ افزودن تیم</button>
 
 <div id="teamList"></div>
 </div>
 
+<!-- مسابقات -->
 <div class="card">
 <h2>📅 برنامه مسابقات</h2>
 
 <div class="grid">
-
 <select id="homeTeam"></select>
 <select id="awayTeam"></select>
-
 <input id="gameDate" type="date">
 <input id="gameTime" type="time">
-
 </div>
 
-<button class="add" onclick="addGame()">
-➕ افزودن مسابقه
-</button>
+<button class="add" onclick="addGame()">➕ افزودن مسابقه</button>
 
 <div id="games"></div>
 </div>
 
+<!-- بازی زنده -->
+<div class="card">
+<h2>🔴 بازی‌های زنده</h2>
+<div id="liveGames"></div>
+</div>
+
+<!-- جدول -->
 <div class="card">
 <h2>📊 جدول گروه‌ها</h2>
 <div id="tables"></div>
 </div>
 
+<!-- نتایج -->
 <div class="card">
-<h2>📋 نتایج بازی‌ها</h2>
+<h2>📋 نتایج</h2>
 <div id="results"></div>
+</div>
+
+<!-- گلزنان -->
+<div class="card">
+<h2>👑 گلزنان</h2>
+<div id="scorers"></div>
 </div>
 
 </div>
@@ -112,7 +129,7 @@ JSON.parse(localStorage.getItem("jalalvandTeams"));
 if(!teams){
 
 teams=defaultTeams.map(name=>({
-name:name,
+name,
 group:"گروه A",
 played:0,
 wins:0,
@@ -143,6 +160,12 @@ let games=
 JSON.parse(localStorage.getItem("jalalvandGames"))
 ||[];
 
+let scorers=
+JSON.parse(localStorage.getItem("jalalvandScorers"))
+||{};
+
+
+/* ذخیره */
 
 function save(){
 
@@ -161,17 +184,21 @@ localStorage.setItem(
 JSON.stringify(games)
 );
 
+localStorage.setItem(
+"jalalvandScorers",
+JSON.stringify(scorers)
+);
+
 render();
+
 }
 
 
-/* گروه‌ها */
+/* گروه */
 
 function addGroup(){
 
-let input=
-document.getElementById("groupInput");
-
+let input=document.getElementById("groupInput");
 let name=input.value.trim();
 
 if(!name){
@@ -185,19 +212,18 @@ return;
 }
 
 groups.push(name);
-
 input.value="";
 
 save();
+
 }
 
 
-function renameGroup(index){
+function renameGroup(i){
 
-let old=groups[index];
+let old=groups[i];
 
-let name=
-prompt(
+let name=prompt(
 "نام جدید گروه:",
 old
 );
@@ -212,56 +238,50 @@ return;
 }
 
 teams.forEach(t=>{
-if(t.group===old){
-t.group=name;
-}
+if(t.group===old)t.group=name;
 });
 
-groups[index]=name;
+groups[i]=name;
 
 save();
+
 }
 
 
-function deleteGroup(index){
+function deleteGroup(i){
 
 if(groups.length===1){
 alert("حداقل یک گروه باید وجود داشته باشد");
 return;
 }
 
-let old=groups[index];
+let old=groups[i];
 
-let target=
-groups.find((g,i)=>i!==index);
+let target=groups.find(
+(g,index)=>index!==i
+);
 
 if(!confirm(
-"تیم‌های این گروه به «"+
-target+
-"» منتقل شوند؟"
+"تیم‌های این گروه به "+target+" منتقل شوند؟"
 ))return;
 
 teams.forEach(t=>{
-if(t.group===old){
-t.group=target;
-}
+if(t.group===old)t.group=target;
 });
 
-groups.splice(index,1);
+groups.splice(i,1);
 
 save();
+
 }
 
 
-/* تیم‌ها */
+/* تیم */
 
 function addTeam(){
 
-let input=
-document.getElementById("teamInput");
-
-let name=
-input.value.trim();
+let input=document.getElementById("teamInput");
+let name=input.value.trim();
 
 if(!name){
 alert("نام تیم را وارد کنید");
@@ -274,8 +294,7 @@ return;
 }
 
 teams.push({
-
-name:name,
+name,
 group:groups[0],
 played:0,
 wins:0,
@@ -284,21 +303,20 @@ losses:0,
 gf:0,
 ga:0,
 points:0
-
 });
 
 input.value="";
 
 save();
+
 }
 
 
-function editTeam(index){
+function editTeam(i){
 
-let old=teams[index].name;
+let old=teams[i].name;
 
-let name=
-prompt(
+let name=prompt(
 "نام جدید تیم:",
 old
 );
@@ -307,62 +325,46 @@ if(!name||!name.trim())return;
 
 name=name.trim();
 
-if(
-teams.some(
-(t,i)=>i!==index&&t.name===name
-)
-){
-
+if(teams.some(
+(t,x)=>x!==i&&t.name===name
+)){
 alert("این نام قبلاً وجود دارد");
-
 return;
-
 }
 
 games.forEach(g=>{
-
-if(g.home===old)
-g.home=name;
-
-if(g.away===old)
-g.away=name;
-
+if(g.home===old)g.home=name;
+if(g.away===old)g.away=name;
 });
 
-teams[index].name=name;
+teams[i].name=name;
 
 save();
+
 }
 
 
-function moveTeam(index){
+function moveTeam(i){
 
-let current=teams[index].group;
+let current=teams[i].group;
 
 let options=
 groups.filter(g=>g!==current);
 
 if(!options.length){
-
 alert("گروه دیگری وجود ندارد");
-
 return;
-
 }
 
-let name=
-prompt(
-"نام گروه مقصد را وارد کنید:\n\n"+
+let name=prompt(
+"نام گروه مقصد:\n\n"+
 options.join("\n"),
 options[0]
 );
 
-if(
-name&&
-options.includes(name)
-){
+if(name&&options.includes(name)){
 
-teams[index].group=name;
+teams[i].group=name;
 
 save();
 
@@ -371,152 +373,273 @@ save();
 }
 
 
-function deleteTeam(index){
+function deleteTeam(i){
 
-let name=teams[index].name;
+let name=teams[i].name;
 
 if(!confirm(
-"تیم «"+name+
-"» و بازی‌های آن حذف شود؟"
+"تیم و بازی‌های آن حذف شود؟"
 ))return;
 
-games=
-games.filter(
-g=>
-g.home!==name &&
-g.away!==name
+games=games.filter(
+g=>g.home!==name&&g.away!==name
 );
 
-teams.splice(index,1);
+teams.splice(i,1);
 
 recalculate();
 
 save();
+
 }
 
 
-/* مسابقات */
+/* مسابقه */
 
 function addGame(){
 
-let h=
-document.getElementById("homeTeam").value;
-
-let a=
-document.getElementById("awayTeam").value;
-
-let date=
-document.getElementById("gameDate").value;
-
-let time=
-document.getElementById("gameTime").value;
+let h=document.getElementById("homeTeam").value;
+let a=document.getElementById("awayTeam").value;
+let date=document.getElementById("gameDate").value;
+let time=document.getElementById("gameTime").value;
 
 if(h===""||a===""){
-
 alert("دو تیم را انتخاب کنید");
-
 return;
 }
 
 if(h===a){
-
-alert(
-"یک تیم نمی‌تواند با خودش بازی کند"
-);
-
+alert("یک تیم نمی‌تواند با خودش بازی کند");
 return;
 }
 
 if(!date){
-
-alert("تاریخ بازی را وارد کنید");
-
+alert("تاریخ را وارد کنید");
 return;
 }
 
 games.push({
-
 home:teams[h].name,
 away:teams[a].name,
-date:date,
-time:time,
+date,
+time,
 played:false,
-homeScore:null,
-awayScore:null
-
+live:false,
+minute:0,
+homeScore:0,
+awayScore:0,
+yellowHome:0,
+yellowAway:0,
+redHome:0,
+redAway:0,
+events:[]
 });
 
 save();
 
 document.getElementById("gameDate").value="";
 document.getElementById("gameTime").value="";
+
 }
 
 
-function setResult(index){
+/* شروع بازی */
 
-let game=games[index];
+function startLive(i){
 
-let hs=
-prompt(
-"گل‌های "+game.home+":",
-game.homeScore??0
+let g=games[i];
+
+g.live=true;
+g.played=false;
+g.minute=0;
+
+save();
+
+}
+
+
+/* توقف */
+
+function stopLive(i){
+
+games[i].live=false;
+
+save();
+
+}
+
+
+/* پایان */
+
+function finishLive(i){
+
+let g=games[i];
+
+g.live=false;
+g.played=true;
+
+recalculate();
+
+save();
+
+}
+
+
+/* دقیقه */
+
+function setMinute(i){
+
+let g=games[i];
+
+let minute=prompt(
+"دقیقه بازی:",
+g.minute||0
 );
 
-if(hs===null)return;
+if(minute===null)return;
 
-let as=
-prompt(
-"گل‌های "+game.away+":",
-game.awayScore??0
-);
+minute=parseInt(minute);
 
-if(as===null)return;
-
-hs=parseInt(hs);
-as=parseInt(as);
-
-if(
-isNaN(hs)||
-isNaN(as)||
-hs<0||
-as<0
-){
-
-alert("نتیجه صحیح نیست");
-
+if(isNaN(minute)||minute<0){
+alert("دقیقه صحیح نیست");
 return;
-
 }
 
-game.homeScore=hs;
-game.awayScore=as;
-game.played=true;
-
-recalculate();
-
-save();
-}
-
-
-function deleteGame(index){
-
-if(
-confirm("این مسابقه حذف شود؟")
-){
-
-games.splice(index,1);
-
-recalculate();
+g.minute=minute;
 
 save();
 
 }
 
+
+/* گل */
+
+function addGoal(i,side){
+
+let g=games[i];
+
+let team=
+side==="home"
+?g.home
+:g.away;
+
+let player=prompt(
+"نام گلزن "+team+":"
+);
+
+if(!player||!player.trim())return;
+
+player=player.trim();
+
+if(side==="home")
+g.homeScore++;
+else
+g.awayScore++;
+
+g.events.push({
+type:"goal",
+team,
+player,
+minute:g.minute
+});
+
+if(!scorers[player]){
+scorers[player]=0;
+}
+
+scorers[player]++;
+
+save();
+
 }
 
 
-/* محاسبه جدول */
+/* کارت زرد */
+
+function addYellow(i,side){
+
+let g=games[i];
+
+let team=
+side==="home"
+?g.home
+:g.away;
+
+let player=prompt(
+"نام بازیکن "+team+" برای کارت زرد:"
+);
+
+if(!player)return;
+
+if(side==="home")
+g.yellowHome++;
+else
+g.yellowAway++;
+
+g.events.push({
+type:"yellow",
+team,
+player,
+minute:g.minute
+});
+
+save();
+
+}
+
+
+/* کارت قرمز */
+
+function addRed(i,side){
+
+let g=games[i];
+
+let team=
+side==="home"
+?g.home
+:g.away;
+
+let player=prompt(
+"نام بازیکن "+team+" برای کارت قرمز:"
+);
+
+if(!player)return;
+
+if(side==="home")
+g.redHome++;
+else
+g.redAway++;
+
+g.events.push({
+type:"red",
+team,
+player,
+minute:g.minute
+});
+
+save();
+
+}
+
+
+/* حذف بازی */
+
+function deleteGame(i){
+
+if(confirm("این مسابقه حذف شود؟")){
+
+games.splice(i,1);
+
+recalculate();
+
+save();
+
+}
+
+}
+
+
+/* جدول */
 
 function recalculate(){
 
@@ -532,51 +655,48 @@ t.points=0;
 
 });
 
-
 games.forEach(g=>{
 
 if(!g.played)return;
 
-let home=
-teams.find(t=>t.name===g.home);
+let h=teams.find(
+t=>t.name===g.home
+);
 
-let away=
-teams.find(t=>t.name===g.away);
+let a=teams.find(
+t=>t.name===g.away
+);
 
-if(!home||!away)return;
+if(!h||!a)return;
 
-home.played++;
-away.played++;
+h.played++;
+a.played++;
 
-home.gf+=g.homeScore;
-home.ga+=g.awayScore;
+h.gf+=g.homeScore;
+h.ga+=g.awayScore;
 
-away.gf+=g.awayScore;
-away.ga+=g.homeScore;
+a.gf+=g.awayScore;
+a.ga+=g.homeScore;
 
 if(g.homeScore>g.awayScore){
 
-home.wins++;
-home.points+=3;
-away.losses++;
+h.wins++;
+h.points+=3;
+a.losses++;
 
-}
+}else if(g.homeScore<g.awayScore){
 
-else if(g.homeScore<g.awayScore){
+a.wins++;
+a.points+=3;
+h.losses++;
 
-away.wins++;
-away.points+=3;
-home.losses++;
+}else{
 
-}
+h.draws++;
+a.draws++;
 
-else{
-
-home.draws++;
-away.draws++;
-
-home.points++;
-away.points++;
+h.points++;
+a.points++;
 
 }
 
@@ -585,18 +705,17 @@ away.points++;
 }
 
 
-/* نمایش گروه‌ها */
+/* گروه‌ها */
 
 function renderGroups(){
 
-let box=
-document.getElementById("groupList");
+let b=document.getElementById("groupList");
 
-box.innerHTML="";
+b.innerHTML="";
 
 groups.forEach((g,i)=>{
 
-box.innerHTML+=`
+b.innerHTML+=`
 
 <div class="item">
 
@@ -604,16 +723,14 @@ box.innerHTML+=`
 
 <span>
 
-<button
-class="edit"
+<button class="edit"
 onclick="renameGroup(${i})">
-✏️ تغییر نام
+✏️
 </button>
 
-<button
-class="delete"
+<button class="delete"
 onclick="deleteGroup(${i})">
-🗑️ حذف
+🗑️
 </button>
 
 </span>
@@ -627,18 +744,17 @@ onclick="deleteGroup(${i})">
 }
 
 
-/* نمایش تیم‌ها */
+/* تیم‌ها */
 
 function renderTeams(){
 
-let box=
-document.getElementById("teamList");
+let b=document.getElementById("teamList");
 
-box.innerHTML="";
+b.innerHTML="";
 
 teams.forEach((t,i)=>{
 
-box.innerHTML+=`
+b.innerHTML+=`
 
 <div class="item">
 
@@ -652,20 +768,17 @@ ${i+1}. ${t.name}
 
 <span>
 
-<button
-class="edit"
+<button class="edit"
 onclick="moveTeam(${i})">
 ↔️ گروه
 </button>
 
-<button
-class="edit"
+<button class="edit"
 onclick="editTeam(${i})">
 ✏️
 </button>
 
-<button
-class="delete"
+<button class="delete"
 onclick="deleteTeam(${i})">
 🗑️
 </button>
@@ -685,87 +798,233 @@ onclick="deleteTeam(${i})">
 
 function renderSelects(){
 
-let home=
-document.getElementById("homeTeam");
+let h=document.getElementById("homeTeam");
+let a=document.getElementById("awayTeam");
 
-let away=
-document.getElementById("awayTeam");
-
-home.innerHTML="";
-away.innerHTML="";
+h.innerHTML="";
+a.innerHTML="";
 
 teams.forEach((t,i)=>{
 
-home.innerHTML+=
-`<option value="${i}">
+h.innerHTML+=`
+<option value="${i}">
 ${t.name} — ${t.group}
-</option>`;
+</option>
+`;
 
-away.innerHTML+=
-`<option value="${i}">
+a.innerHTML+=`
+<option value="${i}">
 ${t.name} — ${t.group}
-</option>`;
+</option>
+`;
 
 });
 
 }
 
 
-/* برنامه بازی‌ها */
+/* برنامه */
 
 function renderGames(){
 
-let box=
-document.getElementById("games");
+let b=document.getElementById("games");
 
 let upcoming=
-games.filter(g=>!g.played);
+games.filter(g=>!g.played&&!g.live);
 
 if(!upcoming.length){
 
-box.innerHTML=
-"<p class='muted'>مسابقه آینده‌ای ثبت نشده است.</p>";
+b.innerHTML=
+"<p class='muted'>بازی آینده‌ای نیست.</p>";
 
 return;
 
 }
 
-box.innerHTML="";
+b.innerHTML="";
 
 upcoming.forEach(g=>{
 
 let i=games.indexOf(g);
 
-box.innerHTML+=`
+b.innerHTML+=`
 
 <div class="game">
 
-<strong>
-${g.home}
-</strong>
-
-<span> 🆚 </span>
-
-<strong>
-${g.away}
-</strong>
+<div>
+<strong>${g.home}</strong>
+&nbsp; 🆚 &nbsp;
+<strong>${g.away}</strong>
+</div>
 
 <p>
 📅 ${g.date}
 ${g.time?" 🕐 "+g.time:""}
 </p>
 
-<button
-class="add"
-onclick="setResult(${i})">
-⚽ ثبت نتیجه
+<button class="live"
+onclick="startLive(${i})">
+🔴 شروع بازی زنده
 </button>
 
-<button
-class="delete"
+<button class="delete"
 onclick="deleteGame(${i})">
 🗑️ حذف
 </button>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+/* بازی زنده */
+
+function renderLive(){
+
+let b=document.getElementById("liveGames");
+
+let live=games.filter(g=>g.live);
+
+if(!live.length){
+
+b.innerHTML=
+"<p class='muted'>در حال حاضر بازی زنده‌ای وجود ندارد.</p>";
+
+return;
+
+}
+
+b.innerHTML="";
+
+live.forEach(g=>{
+
+let i=games.indexOf(g);
+
+let events=g.events||[];
+
+let eventText=events.slice(-8)
+.map(e=>{
+
+let icon=
+e.type==="goal"
+?"⚽":
+e.type==="yellow"
+?"🟨":"🟥";
+
+return `
+<div>
+${icon} دقیقه ${e.minute} — ${e.player}
+(${e.team})
+</div>
+`;
+
+})
+.join("");
+
+b.innerHTML+=`
+
+<div class="game livebox">
+
+<div class="live-title">
+🔴 بازی زنده
+</div>
+
+<div style="text-align:center;margin:12px">
+
+<strong>${g.home}</strong>
+
+<div class="score">
+${g.homeScore}
+-
+${g.awayScore}
+</div>
+
+<strong>${g.away}</strong>
+
+<p>
+⏱️ دقیقه ${g.minute}
+</p>
+
+</div>
+
+<div class="stats">
+
+<div class="stat">
+🟨 ${g.yellowHome}
+<br>
+🟥 ${g.redHome}
+</div>
+
+<div class="stat">
+🟨 ${g.yellowAway}
+<br>
+🟥 ${g.redAway}
+</div>
+
+</div>
+
+<hr>
+
+<button class="edit"
+onclick="setMinute(${i})">
+⏱️ دقیقه
+</button>
+
+<button class="add"
+onclick="addGoal(${i},'home')">
+⚽ گل ${g.home}
+</button>
+
+<button class="add"
+onclick="addGoal(${i},'away')">
+⚽ گل ${g.away}
+</button>
+
+<br>
+
+<button class="edit"
+onclick="addYellow(${i},'home')">
+🟨 ${g.home}
+</button>
+
+<button class="edit"
+onclick="addYellow(${i},'away')">
+🟨 ${g.away}
+</button>
+
+<br>
+
+<button class="delete"
+onclick="addRed(${i},'home')">
+🟥 ${g.home}
+</button>
+
+<button class="delete"
+onclick="addRed(${i},'away')">
+🟥 ${g.away}
+</button>
+
+<br>
+
+<button class="dark"
+onclick="stopLive(${i})">
+⏸️ توقف بازی
+</button>
+
+<button class="live"
+onclick="finishLive(${i})">
+🏁 پایان بازی
+</button>
+
+<hr>
+
+<h4>📋 اتفاقات بازی</h4>
+
+${eventText||"<span class='muted'>هنوز اتفاقی ثبت نشده</span>"}
 
 </div>
 
@@ -780,31 +1039,19 @@ onclick="deleteGame(${i})">
 
 function renderTables(){
 
-let box=
-document.getElementById("tables");
+let b=document.getElementById("tables");
 
-box.innerHTML="";
+b.innerHTML="";
 
 groups.forEach(group=>{
 
-let list=
-teams
+let list=teams
 .filter(t=>t.group===group)
-.sort((a,b)=>{
-
-let da=a.gf-a.ga;
-let db=b.gf-b.ga;
-
-if(b.points!==a.points)
-return b.points-a.points;
-
-if(db!==da)
-return db-da;
-
-return b.gf-a.gf;
-
-});
-
+.sort((a,b)=>
+b.points-a.points||
+(b.gf-b.ga)-(a.gf-a.ga)||
+b.gf-a.gf
+);
 
 let html=`
 
@@ -816,8 +1063,7 @@ let html=`
 
 if(!list.length){
 
-html+=
-"<p class='muted'>این گروه تیمی ندارد.</p>";
+html+="<p class='muted'>تیمی ندارد.</p>";
 
 }else{
 
@@ -826,8 +1072,6 @@ html+=`
 <div style="overflow-x:auto">
 
 <table>
-
-<thead>
 
 <tr>
 <th>رتبه</th>
@@ -840,10 +1084,6 @@ html+=`
 <th>امتیاز</th>
 </tr>
 
-</thead>
-
-<tbody>
-
 `;
 
 list.forEach((t,i)=>{
@@ -853,22 +1093,13 @@ html+=`
 <tr>
 
 <td>${i+1}</td>
-
 <td>${t.name}</td>
-
 <td>${t.played}</td>
-
 <td>${t.wins}</td>
-
 <td>${t.draws}</td>
-
 <td>${t.losses}</td>
-
 <td>${t.gf-t.ga}</td>
-
-<td>
-<b>${t.points}</b>
-</td>
+<td><b>${t.points}</b></td>
 
 </tr>
 
@@ -876,19 +1107,13 @@ html+=`
 
 });
 
-html+=`
-
-</tbody>
-</table>
-</div>
-
-`;
+html+=`</table></div>`;
 
 }
 
 html+=`</div>`;
 
-box.innerHTML+=html;
+b.innerHTML+=html;
 
 });
 
@@ -899,56 +1124,59 @@ box.innerHTML+=html;
 
 function renderResults(){
 
-let box=
-document.getElementById("results");
+let b=document.getElementById("results");
 
 let results=
 games.filter(g=>g.played);
 
 if(!results.length){
 
-box.innerHTML=
-"<p class='muted'>هنوز نتیجه‌ای ثبت نشده است.</p>";
+b.innerHTML=
+"<p class='muted'>هنوز نتیجه‌ای ثبت نشده.</p>";
 
 return;
 
 }
 
-box.innerHTML="";
+b.innerHTML="";
 
 results.forEach(g=>{
 
 let i=games.indexOf(g);
 
-box.innerHTML+=`
+b.innerHTML+=`
 
 <div class="game">
 
-<strong>
-${g.home}
-</strong>
+<div style="text-align:center">
 
-<span style="color:#35d07f;font-size:20px">
-${g.homeScore} - ${g.awayScore}
+<strong>${g.home}</strong>
+
+<span class="score">
+&nbsp; ${g.homeScore} - ${g.awayScore} &nbsp;
 </span>
 
-<strong>
-${g.away}
-</strong>
+<strong>${g.away}</strong>
+
+</div>
 
 <p>
 📅 ${g.date}
 ${g.time?" 🕐 "+g.time:""}
 </p>
 
-<button
-class="edit"
-onclick="setResult(${i})">
-✏️ ویرایش نتیجه
+<p>
+🟨 ${g.yellowHome} - ${g.yellowAway}
+&nbsp;&nbsp;
+🟥 ${g.redHome} - ${g.redAway}
+</p>
+
+<button class="edit"
+onclick="startLive(${i})">
+🔴 دوباره زنده
 </button>
 
-<button
-class="delete"
+<button class="delete"
 onclick="deleteGame(${i})">
 🗑️ حذف
 </button>
@@ -962,20 +1190,70 @@ onclick="deleteGame(${i})">
 }
 
 
+/* گلزنان */
+
+function renderScorers(){
+
+let b=document.getElementById("scorers");
+
+let list=
+Object.entries(scorers)
+.sort((a,b)=>b[1]-a[1]);
+
+if(!list.length){
+
+b.innerHTML=
+"<p class='muted'>هنوز گلی ثبت نشده.</p>";
+
+return;
+
+}
+
+b.innerHTML="";
+
+list.forEach((x,i)=>{
+
+b.innerHTML+=`
+
+<div class="item">
+
+<span>
+${i+1}. ${x[0]}
+</span>
+
+<b>
+⚽ ${x[1]}
+</b>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+/* رندر */
+
 function render(){
 
 renderGroups();
 renderTeams();
 renderSelects();
 renderGames();
+renderLive();
 renderTables();
 renderResults();
+renderScorers();
 
 }
 
-
 recalculate();
 render();
+
+/* به‌روزرسانی صفحه بازی زنده */
+setInterval(renderLive,1000);
 
 </script>
 
