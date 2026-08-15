@@ -4,204 +4,74 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>فوتبال جلالوند</title>
-
 <style>
 *{box-sizing:border-box}
-
-body{
-margin:0;
-background:#07120e;
-color:#fff;
-font-family:Tahoma,Arial,sans-serif;
-padding:15px
-}
-
-.container{
-max-width:950px;
-margin:auto
-}
-
-.card{
-background:#10271c;
-border:1px solid #28513c;
-border-radius:18px;
-padding:20px;
-margin-bottom:15px
-}
-
+body{margin:0;background:#07120e;color:#fff;font-family:Tahoma,Arial;padding:15px}
+.container{max-width:950px;margin:auto}
+.card{background:#10271c;border:1px solid #28513c;border-radius:18px;padding:20px;margin-bottom:15px}
 h1{color:#35d07f}
-
-input,select,button{
-font:inherit;
-border-radius:10px;
-padding:11px;
-margin:4px
-}
-
-input,select{
-background:#07120e;
-color:#fff;
-border:1px solid #40604e
-}
-
-button{
-border:0;
-font-weight:bold;
-cursor:pointer
-}
-
+input,select,button{font:inherit;border-radius:10px;padding:11px;margin:4px}
+input,select{background:#07120e;color:#fff;border:1px solid #40604e}
+button{border:0;font-weight:bold;cursor:pointer}
 .add{background:#35d07f;color:#062014}
-.edit{background:#e0b84d;color:#171006}
+.edit{background:#e0b84d}
 .delete{background:#c74450;color:white}
-
-.game-form{
-display:grid;
-grid-template-columns:1fr 80px 80px 1fr;
-align-items:center;
-gap:5px
-}
-
-.game-form select,
-.game-form input{
-width:100%;
-margin:0
-}
-
-.center{text-align:center}
-
-table{
-width:100%;
-border-collapse:collapse;
-overflow:hidden
-}
-
-th,td{
-padding:10px 5px;
-border-bottom:1px solid #28513c;
-text-align:center
-}
-
+.game{background:#0b1b13;border:1px solid #28513c;border-radius:12px;padding:12px;margin:8px 0}
+.game-line{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.score{font-size:20px;font-weight:bold;color:#35d07f}
+table{width:100%;border-collapse:collapse}
+th,td{padding:9px 4px;border-bottom:1px solid #28513c;text-align:center}
 th{color:#9db5a7}
-
-.result{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:10px;
-border-bottom:1px solid #28513c;
-padding:12px 0
-}
-
-.result-score{
-font-size:20px;
-font-weight:bold;
-color:#35d07f
-}
-
-@media(max-width:650px){
-
-.game-form{
-grid-template-columns:1fr 55px 55px 1fr
-}
-
-.game-form input{
-padding:9px 4px
-}
-
-table{
-font-size:12px
-}
-
-th,td{
-padding:8px 2px
-}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form-grid>*{width:100%;margin:0}
+.center{text-align:center}
+@media(max-width:600px){
+.form-grid{grid-template-columns:1fr}
+table{font-size:11px}
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
 <div class="card">
 <h1>⚽ فوتبال جلالوند</h1>
 <h3>🏆 لیگ محلی جلالوند</h3>
-<p>مدیریت تیم‌ها • ثبت بازی • جدول لیگ • نتایج</p>
+<p>مدیریت تیم‌ها • برنامه مسابقات • نتایج • جدول لیگ</p>
 </div>
 
-
-<!-- مدیریت تیم‌ها -->
-
 <div class="card">
-
 <h2>⚙️ مدیریت تیم‌ها</h2>
-
-<input
-id="teamInput"
-placeholder="نام تیم جدید">
-
-<button
-class="add"
-onclick="addTeam()">
-➕ افزودن تیم
-</button>
-
+<input id="teamInput" placeholder="نام تیم جدید">
+<button class="add" onclick="addTeam()">➕ افزودن تیم</button>
 <div id="teamList"></div>
-
 </div>
 
-
-<!-- ثبت بازی -->
-
 <div class="card">
+<h2>📅 برنامه مسابقات</h2>
 
-<h2>⚽ ثبت بازی</h2>
-
-<div class="game-form">
-
+<div class="form-grid">
 <select id="homeTeam"></select>
-
-<input
-id="homeScore"
-type="number"
-min="0"
-value="0">
-
-<input
-id="awayScore"
-type="number"
-min="0"
-value="0">
-
 <select id="awayTeam"></select>
 
+<input id="gameDate" type="date">
+<input id="gameTime" type="time">
 </div>
 
 <div class="center">
-
-<button
-class="add"
-onclick="addGame()">
-➕ ثبت نتیجه بازی
-</button>
-
+<button class="add" onclick="addGame()">➕ افزودن مسابقه</button>
 </div>
 
+<div id="games"></div>
 </div>
-
-
-<!-- جدول -->
 
 <div class="card">
-
 <h2>📊 جدول لیگ</h2>
 
 <div style="overflow-x:auto">
-
 <table>
-
 <thead>
-
 <tr>
 <th>رتبه</th>
 <th>تیم</th>
@@ -209,281 +79,187 @@ onclick="addGame()">
 <th>برد</th>
 <th>مساوی</th>
 <th>باخت</th>
-<th>گل زده</th>
-<th>گل خورده</th>
+<th>گل‌زده</th>
+<th>گل‌خورده</th>
 <th>تفاضل</th>
 <th>امتیاز</th>
 </tr>
-
 </thead>
-
-<tbody id="leagueTable"></tbody>
-
+<tbody id="table"></tbody>
 </table>
-
 </div>
-
 </div>
-
-
-<!-- نتایج -->
 
 <div class="card">
-
 <h2>📋 نتایج بازی‌ها</h2>
-
 <div id="results"></div>
-
 </div>
 
 </div>
-
 
 <script>
 
-/* ---------------- تیم‌ها ---------------- */
-
 const defaultTeams=[
-"قبربابا",
-"دوردشت",
-"علیباقر",
-"دره بادام",
-"سرجوب",
-"قمر",
-"یاریجان",
-"الکه",
-"ده موسی",
-"پرگلی",
-"گلستان",
-"زمان",
-"تلل",
-"سرائیلان",
-"ده عباسیان",
-"خوبیاران"
+"قبربابا","دوردشت","علیباقر","دره بادام",
+"سرجوب","قمر","یاریجان","الکه",
+"ده موسی","پرگلی","گلستان","زمان",
+"تلل","سرائیلان","ده عباسیان","خوبیاران"
 ];
 
-let teams=
-JSON.parse(
-localStorage.getItem("jalalvandTeams")
-);
+let teams=JSON.parse(localStorage.getItem("jalalvandTeams"));
 
 if(!teams){
-
 teams=defaultTeams.map(name=>({
-name:name,
-played:0,
-wins:0,
-draws:0,
-losses:0,
-gf:0,
-ga:0,
-points:0
+name,played:0,wins:0,draws:0,losses:0,
+gf:0,ga:0,points:0
 }));
-
 }
 
-
-/* ---------------- بازی‌ها ---------------- */
-
-let games=
-JSON.parse(
-localStorage.getItem("jalalvandGames")
-)||[];
-
-
-/* ---------------- ذخیره ---------------- */
+let games=JSON.parse(localStorage.getItem("jalalvandGames"))||[];
 
 function save(){
-
-localStorage.setItem(
-"jalalvandTeams",
-JSON.stringify(teams)
-);
-
-localStorage.setItem(
-"jalalvandGames",
-JSON.stringify(games)
-);
-
+localStorage.setItem("jalalvandTeams",JSON.stringify(teams));
+localStorage.setItem("jalalvandGames",JSON.stringify(games));
 render();
-
 }
-
-
-/* ---------------- مدیریت تیم ---------------- */
 
 function addTeam(){
-
-const input=
-document.getElementById("teamInput");
-
-const name=
-input.value.trim();
+let input=document.getElementById("teamInput");
+let name=input.value.trim();
 
 if(!name){
-
 alert("نام تیم را وارد کنید");
-
 return;
-
 }
 
-if(
-teams.some(t=>t.name===name)
-){
-
+if(teams.some(t=>t.name===name)){
 alert("این تیم قبلاً وجود دارد");
-
 return;
-
 }
 
 teams.push({
-
-name:name,
-played:0,
-wins:0,
-draws:0,
-losses:0,
-gf:0,
-ga:0,
-points:0
-
+name,played:0,wins:0,draws:0,losses:0,
+gf:0,ga:0,points:0
 });
 
 input.value="";
-
 save();
-
 }
 
-
-function editTeam(index){
-
-const name=
-prompt(
-"نام جدید تیم:",
-teams[index].name
-);
+function editTeam(i){
+let name=prompt("نام جدید تیم:",teams[i].name);
 
 if(name&&name.trim()){
+let old=teams[i].name;
+let n=name.trim();
 
-teams[index].name=
-name.trim();
+games.forEach(g=>{
+if(g.home===old)g.home=n;
+if(g.away===old)g.away=n;
+});
 
+teams[i].name=n;
 save();
-
+}
 }
 
-}
+function deleteTeam(i){
+if(!confirm("این تیم و بازی‌هایش حذف شود؟"))return;
 
+let name=teams[i].name;
 
-function deleteTeam(index){
-
-if(
-!confirm(
-"آیا می‌خواهی این تیم حذف شود؟"
-)
-)return;
-
-
-/* حذف بازی‌های این تیم */
-
-games=
-games.filter(
-g=>
-g.home!==teams[index].name &&
-g.away!==teams[index].name
+games=games.filter(
+g=>g.home!==name&&g.away!==name
 );
 
-teams.splice(index,1);
+teams.splice(i,1);
 
 recalculate();
-
 save();
-
 }
-
-
-/* ---------------- ثبت بازی ---------------- */
 
 function addGame(){
 
-const homeIndex=
-document.getElementById("homeTeam").value;
+let h=document.getElementById("homeTeam").value;
+let a=document.getElementById("awayTeam").value;
+let date=document.getElementById("gameDate").value;
+let time=document.getElementById("gameTime").value;
 
-const awayIndex=
-document.getElementById("awayTeam").value;
-
-const homeScore=
-parseInt(
-document.getElementById("homeScore").value
-);
-
-const awayScore=
-parseInt(
-document.getElementById("awayScore").value
-);
-
-
-if(
-homeIndex===""||
-awayIndex===""
-){
-
+if(h===""||a===""){
 alert("دو تیم را انتخاب کنید");
-
 return;
-
 }
 
-
-if(homeIndex===awayIndex){
-
+if(h===a){
 alert("یک تیم نمی‌تواند با خودش بازی کند");
-
 return;
-
 }
 
-
-if(
-isNaN(homeScore)||
-isNaN(awayScore)||
-homeScore<0||
-awayScore<0
-){
-
-alert("نتیجه بازی صحیح نیست");
-
+if(!date){
+alert("تاریخ بازی را وارد کنید");
 return;
-
 }
-
 
 games.push({
-
-home:teams[homeIndex].name,
-away:teams[awayIndex].name,
-homeScore:homeScore,
-awayScore:awayScore
-
+home:teams[h].name,
+away:teams[a].name,
+date,
+time,
+played:false,
+homeScore:null,
+awayScore:null
 });
-
-
-recalculate();
 
 save();
 
+document.getElementById("gameDate").value="";
+document.getElementById("gameTime").value="";
 }
 
+function setResult(i){
 
- /* ---------------- محاسبه جدول ---------------- */
+let hs=prompt(
+"گل‌های "+games[i].home+":",
+games[i].homeScore??0
+);
+
+if(hs===null)return;
+
+let as=prompt(
+"گل‌های "+games[i].away+":",
+games[i].awayScore??0
+);
+
+if(as===null)return;
+
+hs=parseInt(hs);
+as=parseInt(as);
+
+if(isNaN(hs)||isNaN(as)||hs<0||as<0){
+alert("نتیجه صحیح نیست");
+return;
+}
+
+games[i].homeScore=hs;
+games[i].awayScore=as;
+games[i].played=true;
+
+recalculate();
+save();
+}
+
+function deleteGame(i){
+
+if(confirm("این مسابقه حذف شود؟")){
+games.splice(i,1);
+recalculate();
+save();
+}
+}
 
 function recalculate(){
 
 teams.forEach(t=>{
-
 t.played=0;
 t.wins=0;
 t.draws=0;
@@ -491,306 +267,196 @@ t.losses=0;
 t.gf=0;
 t.ga=0;
 t.points=0;
-
 });
 
+games.forEach(g=>{
 
-games.forEach(game=>{
+if(!g.played)return;
 
-const home=
-teams.find(t=>t.name===game.home);
+let h=teams.find(t=>t.name===g.home);
+let a=teams.find(t=>t.name===g.away);
 
-const away=
-teams.find(t=>t.name===game.away);
+if(!h||!a)return;
 
-if(!home||!away)return;
+h.played++;
+a.played++;
 
+h.gf+=g.homeScore;
+h.ga+=g.awayScore;
 
-home.played++;
-away.played++;
+a.gf+=g.awayScore;
+a.ga+=g.homeScore;
 
-home.gf+=game.homeScore;
-home.ga+=game.awayScore;
-
-away.gf+=game.awayScore;
-away.ga+=game.homeScore;
-
-
-if(
-game.homeScore>
-game.awayScore
-){
-
-home.wins++;
-home.points+=3;
-away.losses++;
-
+if(g.homeScore>g.awayScore){
+h.wins++;
+h.points+=3;
+a.losses++;
 }
-
-else if(
-game.homeScore<
-game.awayScore
-){
-
-away.wins++;
-away.points+=3;
-home.losses++;
-
+else if(g.homeScore<g.awayScore){
+a.wins++;
+a.points+=3;
+h.losses++;
 }
-
 else{
-
-home.draws++;
-away.draws++;
-
-home.points++;
-away.points++;
-
+h.draws++;
+a.draws++;
+h.points++;
+a.points++;
 }
-
 });
-
-
-/* مرتب‌سازی جدول */
 
 teams.sort((a,b)=>{
-
-const diffA=
-a.gf-a.ga;
-
-const diffB=
-b.gf-b.ga;
-
 if(b.points!==a.points)
 return b.points-a.points;
 
-if(diffB!==diffA)
-return diffB-diffA;
+let dA=a.gf-a.ga;
+let dB=b.gf-b.ga;
+
+if(dB!==dA)return dB-dA;
 
 return b.gf-a.gf;
-
 });
-
 }
 
+function renderSelects(){
 
-/* ---------------- انتخاب تیم‌ها ---------------- */
+let h=document.getElementById("homeTeam");
+let a=document.getElementById("awayTeam");
 
-function renderTeamSelects(){
+h.innerHTML="";
+a.innerHTML="";
 
-const home=
-document.getElementById("homeTeam");
-
-const away=
-document.getElementById("awayTeam");
-
-home.innerHTML="";
-away.innerHTML="";
-
-
-teams.forEach((team,index)=>{
-
-home.innerHTML+=
-`<option value="${index}">
-${team.name}
-</option>`;
-
-away.innerHTML+=
-`<option value="${index}">
-${team.name}
-</option>`;
-
+teams.forEach((t,i)=>{
+h.innerHTML+=`<option value="${i}">${t.name}</option>`;
+a.innerHTML+=`<option value="${i}">${t.name}</option>`;
 });
-
 }
-
-
-/* ---------------- نمایش تیم‌ها ---------------- */
 
 function renderTeams(){
 
-const list=
-document.getElementById("teamList");
+let box=document.getElementById("teamList");
+box.innerHTML="";
 
-list.innerHTML="";
-
-
-teams.forEach((team,index)=>{
-
-list.innerHTML+=`
-
-<div class="result">
-
+teams.forEach((t,i)=>{
+box.innerHTML+=`
+<div class="game-line" style="padding:10px 0;border-bottom:1px solid #28513c">
+<span>${i+1}. ${t.name}</span>
 <span>
-${index+1}. ${team.name}
+<button class="edit" onclick="editTeam(${i})">✏️</button>
+<button class="delete" onclick="deleteTeam(${i})">🗑️</button>
 </span>
-
-<div>
-
-<button
-class="edit"
-onclick="editTeam(${index})">
-✏️
-</button>
-
-<button
-class="delete"
-onclick="deleteTeam(${index})">
-🗑️
-</button>
-
-</div>
-
-</div>
-
-`;
-
+</div>`;
 });
-
 }
 
+function renderGames(){
 
-/* ---------------- نمایش جدول ---------------- */
+let box=document.getElementById("games");
+box.innerHTML="";
+
+let upcoming=games.filter(g=>!g.played);
+
+if(upcoming.length===0){
+box.innerHTML="<p>هنوز مسابقه‌ای برای آینده ثبت نشده است.</p>";
+return;
+}
+
+upcoming.forEach((g)=>{
+let i=games.indexOf(g);
+
+box.innerHTML+=`
+<div class="game">
+<div class="game-line">
+<strong>${g.home}</strong>
+<span>🆚</span>
+<strong>${g.away}</strong>
+</div>
+
+<p>📅 ${g.date} ${g.time? "🕐 "+g.time:""}</p>
+
+<button class="add" onclick="setResult(${i})">
+⚽ ثبت نتیجه
+</button>
+
+<button class="delete" onclick="deleteGame(${i})">
+🗑️ حذف
+</button>
+</div>`;
+});
+}
 
 function renderTable(){
 
-const table=
-document.getElementById("leagueTable");
+let box=document.getElementById("table");
+box.innerHTML="";
 
-table.innerHTML="";
+teams.forEach((t,i)=>{
 
+let diff=t.gf-t.ga;
 
-teams.forEach((team,index)=>{
-
-const diff=
-team.gf-team.ga;
-
-table.innerHTML+=`
-
+box.innerHTML+=`
 <tr>
-
-<td>${index+1}</td>
-
-<td>${team.name}</td>
-
-<td>${team.played}</td>
-
-<td>${team.wins}</td>
-
-<td>${team.draws}</td>
-
-<td>${team.losses}</td>
-
-<td>${team.gf}</td>
-
-<td>${team.ga}</td>
-
+<td>${i+1}</td>
+<td>${t.name}</td>
+<td>${t.played}</td>
+<td>${t.wins}</td>
+<td>${t.draws}</td>
+<td>${t.losses}</td>
+<td>${t.gf}</td>
+<td>${t.ga}</td>
 <td>${diff}</td>
-
-<td><b>${team.points}</b></td>
-
-</tr>
-
-`;
-
+<td><b>${t.points}</b></td>
+</tr>`;
 });
-
 }
-
-
-/* ---------------- نمایش نتایج ---------------- */
 
 function renderResults(){
 
-const box=
-document.getElementById("results");
-
+let box=document.getElementById("results");
 box.innerHTML="";
 
+let results=games.filter(g=>g.played);
 
-if(games.length===0){
-
-box.innerHTML=
-"<p>هنوز بازی‌ای ثبت نشده است.</p>";
-
+if(results.length===0){
+box.innerHTML="<p>هنوز نتیجه‌ای ثبت نشده است.</p>";
 return;
-
 }
 
-
-games.forEach((game,index)=>{
+results.forEach(g=>{
+let i=games.indexOf(g);
 
 box.innerHTML+=`
-
-<div class="result">
-
-<span>
-${game.home}
+<div class="game">
+<div class="game-line">
+<strong>${g.home}</strong>
+<span class="score">
+${g.homeScore} - ${g.awayScore}
 </span>
-
-<span class="result-score">
-${game.homeScore}
--
-${game.awayScore}
-</span>
-
-<span>
-${game.away}
-</span>
-
-<button
-class="delete"
-onclick="deleteGame(${index})">
-🗑️
-</button>
-
+<strong>${g.away}</strong>
 </div>
 
-`;
+<p>📅 ${g.date} ${g.time? "🕐 "+g.time:""}</p>
 
+<button class="edit" onclick="setResult(${i})">
+✏️ ویرایش نتیجه
+</button>
+
+<button class="delete" onclick="deleteGame(${i})">
+🗑️ حذف
+</button>
+</div>`;
 });
-
 }
-
-
-/* ---------------- حذف بازی ---------------- */
-
-function deleteGame(index){
-
-if(
-confirm(
-"آیا این نتیجه حذف شود؟"
-)
-){
-
-games.splice(index,1);
-
-recalculate();
-
-save();
-
-}
-
-}
-
-
-/* ---------------- نمایش ---------------- */
 
 function render(){
-
 renderTeams();
-
-renderTeamSelects();
-
+renderSelects();
+renderGames();
 renderTable();
-
 renderResults();
-
 }
 
-
 recalculate();
-
 save();
 
 </script>
