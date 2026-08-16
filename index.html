@@ -172,7 +172,10 @@ placeholder="سال؛ مثلاً ۱۴۰۴">
 <h2>👑 گلزنان</h2>
 <div id="scorers"></div>
 </div>
-
+<div class="card">
+  <h2>🏆 جدول گلزنان</h2>
+  <div id="scorersTable"></div>
+</div>
 </div>
 
 <script>
@@ -1726,9 +1729,97 @@ ${
     </div>
   `).join("");
 }
+  function renderScorersTable(){
+
+  const box =
+    document.getElementById("scorersTable");
+
+  if(!box) return;
+
+  let list = [];
+
+  teams.forEach(team => {
+
+    const teamPlayers =
+      players[team.name] || [];
+
+    teamPlayers.forEach(player => {
+
+      list.push({
+        name: player.name,
+        team: team.name,
+        goals: player.goals || 0
+      });
+
+    });
+
+  });
+
+  list.sort((a,b) =>
+    b.goals - a.goals
+  );
+
+  if(!list.length){
+
+    box.innerHTML =
+      '<p class="muted">هنوز بازیکنی ثبت نشده است.</p>';
+
+    return;
+  }
+
+  box.innerHTML = `
+
+    <div style="overflow-x:auto">
+
+      <table>
+
+        <tr>
+          <th>رتبه</th>
+          <th>بازیکن</th>
+          <th>تیم</th>
+          <th>⚽ گل</th>
+        </tr>
+
+        ${
+          list.map((p,i) => `
+
+            <tr>
+
+              <td>
+                ${
+                  i === 0 ? "🥇" :
+                  i === 1 ? "🥈" :
+                  i === 2 ? "🥉" :
+                  i + 1
+                }
+              </td>
+
+              <td>
+                <b>${p.name}</b>
+              </td>
+
+              <td>
+                ${p.team}
+              </td>
+
+              <td>
+                <b>⚽ ${p.goals}</b>
+              </td>
+
+            </tr>
+
+          `).join("")
+        }
+
+      </table>
+
+    </div>
+  `;
+}
 function render(){
 renderPlayers();
 renderHonors();
+renderScorersTable(); 
 renderGroups();
 showTeamProfile();
 renderTeams();
