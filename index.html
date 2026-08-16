@@ -366,7 +366,8 @@ function addTeam(){
 
 let input=document.getElementById("teamInput");
 let name=input.value.trim();
-
+let logoInput = document.getElementById("teamLogo");
+let logoFile = logoInput.files[0];
 if(!name){
 alert("نام تیم را وارد کنید");
 return;
