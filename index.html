@@ -362,7 +362,7 @@ save();
 
 /* تیم */
 
-function addTeam(){
+  async function addTeam(){
 
 let input=document.getElementById("teamInput");
 let name=input.value.trim();
@@ -377,9 +377,22 @@ if(teams.some(t=>t.name===name)){
 alert("این تیم قبلاً وجود دارد");
 return;
 }
+let logo = "";
 
+if (logoFile) {
+  logo = await new Promise((resolve) => {
+    let reader = new FileReader();
+
+    reader.onload = function(e) {
+      resolve(e.target.result);
+    };
+
+    reader.readAsDataURL(logoFile);
+  });
+}
 teams.push({
 name,
+logo: logo, 
 group:groups[0],
 played:0,
 wins:0,
@@ -389,7 +402,7 @@ gf:0,
 ga:0,
 points:0
 });
-teams[teams.length - 1].logo = "";
+
 input.value="";
 teams[teams.length - 1].logo = "";
 save();
