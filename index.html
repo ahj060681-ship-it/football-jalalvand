@@ -466,18 +466,49 @@ save();
 
 /* مسابقه */
 function addHonor(){
+
+  let team =
+    document.getElementById("honorTeam").value;
+
+  let title =
+    document.getElementById("honorTitle").value.trim();
+
+  let year =
+    document.getElementById("honorYear").value.trim();
+
+  if(!team || !title){
+    alert("تیم و عنوان افتخار را وارد کنید");
+    return;
+  }
+
+  if(!honors[team]){
+    honors[team] = [];
+  }
+
+  honors[team].push({
+    title: title,
+    year: year
+  });
+
+  document.getElementById("honorTitle").value = "";
+  document.getElementById("honorYear").value = "";
+
+  save();
+}
+
+
 function addPlayer(){
 
-  const team =
+  let team =
     document.getElementById("playerTeam").value;
 
-  const name =
+  let name =
     document.getElementById("playerName").value.trim();
 
-  const number =
+  let number =
     document.getElementById("playerNumber").value;
 
-  const position =
+  let position =
     document.getElementById("playerPosition").value;
 
   if(!team || !name){
@@ -503,29 +534,8 @@ function addPlayer(){
 
   save();
 }
-  let team = document.getElementById("honorTeam").value;
-  let title = document.getElementById("honorTitle").value.trim();
-  let year = document.getElementById("honorYear").value.trim();
 
-  if(!team || !title){
-    alert("تیم و عنوان افتخار را وارد کنید");
-    return;
-  }
 
-  if(!honors[team]){
-    honors[team] = [];
-  }
-
-  honors[team].push({
-    title: title,
-    year: year
-  });
-
-  document.getElementById("honorTitle").value = "";
-  document.getElementById("honorYear").value = "";
-
-  save();
-}
 function addGame(){
 
 let h=document.getElementById("homeTeam").value;
