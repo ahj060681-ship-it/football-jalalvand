@@ -1509,7 +1509,32 @@ function renderHonors(){
       }
 
       <hr>
+<h3>👥 بازیکنان تیم</h3>
 
+${
+  (players[team.name] || []).length
+  ? (players[team.name] || []).map(p => `
+      <div class="item">
+        <span>
+          <b>
+            ${p.number ? "#" + p.number + " " : ""}
+            ${p.name}
+          </b>
+          <br>
+          <small class="muted">${p.position}</small>
+        </span>
+
+        <span>
+          ⚽ ${p.goals || 0}
+          🟨 ${p.yellow || 0}
+          🟥 ${p.red || 0}
+        </span>
+      </div>
+    `).join("")
+  : '<p class="muted">هنوز بازیکنی برای این تیم ثبت نشده.</p>'
+}
+
+<hr>
       <h3>📅 بازی‌های تیم</h3>
 
       ${
