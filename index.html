@@ -653,115 +653,204 @@ save();
 
 
 /* گل */
-
 function addGoal(i,side){
 
-let g=games[i];
+  let g = games[i];
 
-let team=
-side==="home"
-?g.home
-:g.away;
+  let team =
+    side === "home"
+    ? g.home
+    : g.away;
 
-let player=prompt(
-"نام گلزن "+team+":"
-);
+  let teamPlayers =
+    players[team] || [];
 
-if(!player||!player.trim())return;
+  if(!teamPlayers.length){
+    alert("برای این تیم هنوز بازیکنی ثبت نشده است");
+    return;
+  }
 
-player=player.trim();
+  let playerNames =
+    teamPlayers.map((p,index) =>
+      (index + 1) + ". " +
+      p.name +
+      (p.number ? " (#" + p.number + ")" : "")
+    ).join("\n");
 
-if(side==="home")
-g.homeScore++;
-else
-g.awayScore++;
+  let choice = prompt(
+    "⚽ گلزن " + team + " را انتخاب کنید:\n\n" +
+    playerNames +
+    "\n\nشماره بازیکن را وارد کنید:"
+  );
 
-g.events.push({
-type:"goal",
-team,
-player,
-minute:g.minute
-});
+  if(choice === null) return;
 
-if(!scorers[player]){
-scorers[player]=0;
+  let index = parseInt(choice) - 1;
+
+  if(
+    isNaN(index) ||
+    index < 0 ||
+    index >= teamPlayers.length
+  ){
+    alert("شماره بازیکن صحیح نیست");
+    return;
+  }
+
+  let player = teamPlayers[index];
+
+  if(side === "home"){
+    g.homeScore++;
+  }else{
+    g.awayScore++;
+  }
+
+  player.goals =
+    (player.goals || 0) + 1;
+
+  g.events.push({
+    type:"goal",
+    team:team,
+    player:player.name,
+    minute:g.minute
+  });
+
+  if(!scorers[player.name]){
+    scorers[player.name] = 0;
+  }
+
+  scorers[player.name]++;
+
+  save();
 }
-
-scorers[player]++;
-
-save();
-
-}
-
 
 /* کارت زرد */
-
 function addYellow(i,side){
 
-let g=games[i];
+  let g = games[i];
 
-let team=
-side==="home"
-?g.home
-:g.away;
+  let team =
+    side === "home"
+    ? g.home
+    : g.away;
 
-let player=prompt(
-"نام بازیکن "+team+" برای کارت زرد:"
-);
+  let teamPlayers =
+    players[team] || [];
 
-if(!player)return;
+  if(!teamPlayers.length){
+    alert("برای این تیم هنوز بازیکنی ثبت نشده است");
+    return;
+  }
 
-if(side==="home")
-g.yellowHome++;
-else
-g.yellowAway++;
+  let playerNames =
+    teamPlayers.map((p,index) =>
+      (index + 1) + ". " +
+      p.name +
+      (p.number ? " (#" + p.number + ")" : "")
+    ).join("\n");
 
-g.events.push({
-type:"yellow",
-team,
-player,
-minute:g.minute
-});
+  let choice = prompt(
+    "🟨 بازیکن " + team + " را انتخاب کنید:\n\n" +
+    playerNames +
+    "\n\nشماره بازیکن را وارد کنید:"
+  );
 
-save();
+  if(choice === null) return;
 
+  let index = parseInt(choice) - 1;
+
+  if(
+    isNaN(index) ||
+    index < 0 ||
+    index >= teamPlayers.length
+  ){
+    alert("شماره بازیکن صحیح نیست");
+    return;
+  }
+
+  let player = teamPlayers[index];
+
+  if(side === "home"){
+    g.yellowHome++;
+  }else{
+    g.yellowAway++;
+  }
+
+  player.yellow =
+    (player.yellow || 0) + 1;
+
+  g.events.push({
+    type:"yellow",
+    team:team,
+    player:player.name,
+    minute:g.minute
+  });
+
+  save();
 }
-
-
 /* کارت قرمز */
-
 function addRed(i,side){
 
-let g=games[i];
+  let g = games[i];
 
-let team=
-side==="home"
-?g.home
-:g.away;
+  let team =
+    side === "home"
+    ? g.home
+    : g.away;
 
-let player=prompt(
-"نام بازیکن "+team+" برای کارت قرمز:"
-);
+  let teamPlayers =
+    players[team] || [];
 
-if(!player)return;
+  if(!teamPlayers.length){
+    alert("برای این تیم هنوز بازیکنی ثبت نشده است");
+    return;
+  }
 
-if(side==="home")
-g.redHome++;
-else
-g.redAway++;
+  let playerNames =
+    teamPlayers.map((p,index) =>
+      (index + 1) + ". " +
+      p.name +
+      (p.number ? " (#" + p.number + ")" : "")
+    ).join("\n");
 
-g.events.push({
-type:"red",
-team,
-player,
-minute:g.minute
-});
+  let choice = prompt(
+    "🟥 بازیکن " + team + " را انتخاب کنید:\n\n" +
+    playerNames +
+    "\n\nشماره بازیکن را وارد کنید:"
+  );
 
-save();
+  if(choice === null) return;
 
+  let index = parseInt(choice) - 1;
+
+  if(
+    isNaN(index) ||
+    index < 0 ||
+    index >= teamPlayers.length
+  ){
+    alert("شماره بازیکن صحیح نیست");
+    return;
+  }
+
+  let player = teamPlayers[index];
+
+  if(side === "home"){
+    g.redHome++;
+  }else{
+    g.redAway++;
+  }
+
+  player.red =
+    (player.red || 0) + 1;
+
+  g.events.push({
+    type:"red",
+    team:team,
+    player:player.name,
+    minute:g.minute
+  });
+
+  save();
 }
-
-
 /* حذف بازی */
 
 function deleteGame(i){
