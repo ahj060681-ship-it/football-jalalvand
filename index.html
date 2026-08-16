@@ -1291,9 +1291,41 @@ ${i+1}. ${x[0]}
 
 
 /* رندر */
+function renderHonors(){
 
+  const box = document.getElementById("honorsShowcase");
+
+  let html = "";
+
+  teams.forEach(team => {
+
+    const list = honors[team.name] || [];
+
+    if(list.length === 0) return;
+
+    html += `
+      <div class="team-card">
+        <h3>⚽ ${team.name}</h3>
+
+        ${list.map(h => `
+          <div class="item">
+            <span>
+              🏆 ${h.title}
+              ${h.year ? " — " + h.year : ""}
+            </span>
+          </div>
+        `).join("")}
+
+      </div>
+    `;
+  });
+
+  box.innerHTML =
+    html ||
+    '<p class="muted">هنوز افتخاری ثبت نشده است.</p>';
+}
 function render(){
-
+renderHonors();
 renderGroups();
 renderTeams();
 renderSelects();
