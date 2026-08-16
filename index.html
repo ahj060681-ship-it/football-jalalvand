@@ -56,6 +56,16 @@ th{color:#9db5a7}
 <div id="honorsShowcase"></div>
 
 </div>
+  <div class="card">
+  <h2>👤 صفحه اختصاصی تیم</h2>
+
+  <select id="teamProfileSelect"
+          onchange="showTeamProfile()">
+  </select>
+
+  <div id="teamProfile"></div>
+</div>
+
 <div class="card">
 <h2>🗂️ مدیریت گروه‌ها</h2>
 
@@ -857,6 +867,12 @@ document.getElementById("honorTeam").innerHTML =
   teams.map(t =>
     `<option value="${t.name}">${t.name}</option>`
   ).join("");
+  document.getElementById("teamProfileSelect").innerHTML =
+  teams.map(t =>
+    `<option value="${t.name}">${t.name}</option>`
+  ).join("");
+
+showTeamProfile();
 h.innerHTML="";
 a.innerHTML="";
 
@@ -1324,9 +1340,132 @@ function renderHonors(){
     html ||
     '<p class="muted">هنوز افتخاری ثبت نشده است.</p>';
 }
+  function showTeamProfile(){
+
+  const name =
+    document.getElementById("teamProfileSelect").value;
+
+  const team =
+    teams.find(t => t.name === name);
+
+  if(!team) return;
+
+  const teamHonors =
+    honors[team.name] || [];
+
+  const teamGames =
+    games.filter(g =>
+      g.home === team.name ||
+      g.away === team.name
+    );
+
+  const wins = team.wins || 0;
+  const draws = team.draws || 0;
+  const losses = team.losses || 0;
+
+  document.getElementById("teamProfile").innerHTML = `
+
+    <div class="team-card">
+
+      <h2>⚽ ${team.name}</h2>
+
+      <p class="muted">
+        🗂️ گروه: ${team.group}
+      </p>
+
+      <div class="stats">
+
+        <div class="stat">
+          🏟️ بازی‌ها
+          <br>
+          <b>${team.played}</b>
+        </div>
+
+        <div class="stat">
+          🏆 امتیاز
+          <br>
+          <b>${team.points}</b>
+        </div>
+
+        <div class="stat">
+          ✅ برد
+          <br>
+          <b>${wins}</b>
+        </div>
+
+        <div class="stat">
+          🤝 مساوی
+          <br>
+          <b>${draws}</b>
+        </div>
+
+        <div class="stat">
+          ❌ باخت
+          <br>
+          <b>${losses}</b>
+        </div>
+
+        <div class="stat">
+          ⚽ گل
+          <br>
+          <b>${team.gf} - ${team.ga}</b>
+        </div>
+
+      </div>
+
+      <hr>
+
+      <h3>🏆 افتخارات</h3>
+
+      ${
+        teamHonors.length
+        ? teamHonors.map(h => `
+          <p>
+            🏆 ${h.title}
+            ${h.year ? " — " + h.year : ""}
+          </p>
+        `).join("")
+        : '<p class="muted">هنوز افتخاری ثبت نشده.</p>'
+      }
+
+      <hr>
+
+      <h3>📅 بازی‌های تیم</h3>
+
+      ${
+        teamGames.length
+        ? teamGames.slice(-10).reverse().map(g => `
+          <div class="game">
+
+            <b>${g.home}</b>
+
+            ${
+              g.played
+              ? ` <span class="score">
+                  ${g.homeScore} - ${g.awayScore}
+                </span> `
+              : " 🆚 "
+            }
+
+            <b>${g.away}</b>
+
+            <br>
+            <small class="muted">
+              📅 ${g.date}
+            </small>
+
+          </div>
+        `).join("")
+        : '<p class="muted">هنوز مسابقه‌ای ثبت نشده.</p>'
+      }
+
+    </div>
+  `;
+}
 function render(){
 renderHonors();
 renderGroups();
+showTeamProfile();
 renderTeams();
 renderSelects();
 renderGames();
