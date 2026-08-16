@@ -1581,6 +1581,39 @@ function renderHonors(){
     </div>
   `).join("");
 } 
+  function renderPlayers(){
+
+  let team =
+    document.getElementById("playerTeam").value;
+
+  let list =
+    players[team] || [];
+
+  let box =
+    document.getElementById("playerList");
+
+  if(!list.length){
+    box.innerHTML =
+      '<p class="muted">هنوز بازیکنی ثبت نشده است.</p>';
+    return;
+  }
+
+  box.innerHTML = list.map((p,i) => `
+    <div class="item">
+      <span>
+        <b>${p.number ? "#" + p.number + " " : ""}${p.name}</b>
+        <br>
+        <small class="muted">${p.position}</small>
+      </span>
+
+      <span>
+        ⚽ ${p.goals || 0}
+        🟨 ${p.yellow || 0}
+        🟥 ${p.red || 0}
+      </span>
+    </div>
+  `).join("");
+}
 function render(){
 renderPlayers();
 renderHonors();
