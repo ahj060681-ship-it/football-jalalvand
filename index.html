@@ -176,6 +176,15 @@ placeholder="سال؛ مثلاً ۱۴۰۴">
   <h2>🏆 جدول گلزنان</h2>
   <div id="scorersTable"></div>
 </div>
+  <div class="card">
+  <h2>👤 صفحه اختصاصی بازیکن</h2>
+
+  <select id="playerProfileSelect"
+          onchange="showPlayerProfile()">
+  </select>
+
+  <div id="playerProfile"></div>
+</div>
 </div>
 
 <script>
@@ -1049,7 +1058,29 @@ h.innerHTML="";
 a.innerHTML="";
 
 teams.forEach((t,i)=>{
+const playerSelect =
+  document.getElementById("playerProfileSelect");
 
+playerSelect.innerHTML = "";
+
+teams.forEach(team => {
+
+  const teamPlayers =
+    players[team.name] || [];
+
+  teamPlayers.forEach((player,index) => {
+
+    playerSelect.innerHTML += `
+      <option value="${team.name}|${index}">
+        ${player.name} — ${team.name}
+      </option>
+    `;
+
+  });
+
+});
+
+showPlayerProfile();
 h.innerHTML+=`
 <option value="${i}">
 ${t.name} — ${t.group}
@@ -1812,6 +1843,87 @@ ${
         }
 
       </table>
+
+    </div>
+  `;
+}
+  function showPlayerProfile(){
+
+  const value =
+    document.getElementById("playerProfileSelect").value;
+
+  if(!value){
+    document.getElementById("playerProfile").innerHTML =
+      '<p class="muted">بازیکنی انتخاب نشده است.</p>';
+    return;
+  }
+
+  const parts = value.split("|");
+  const teamName = parts[0];
+  const playerIndex = parseInt(parts[1]);
+
+  const teamPlayers =
+    players[teamName] || [];
+
+  const player =
+    teamPlayers[playerIndex];
+
+  if(!player){
+    document.getElementById("playerProfile").innerHTML =
+      '<p class="muted">بازیکن پیدا نشد.</p>';
+    return;
+  }
+
+  const team =
+    teams.find(t => t.name === teamName);
+
+  document.getElementById("playerProfile").innerHTML = `
+
+    <div class="team-card">
+
+      <h2>👤 ${player.name}</h2>
+
+      <p class="muted">
+        🏟️ تیم: ${teamName}
+      </p>
+
+      <p>
+        🔢 شماره پیراهن:
+        <b>${player.number || "-"}</b>
+      </p>
+
+      <p>
+        📍 پست:
+        <b>${player.position || "-"}</b>
+      </p>
+
+      <div class="stats">
+
+        <div class="stat">
+          ⚽ گل
+          <br>
+          <b>${player.goals || 0}</b>
+        </div>
+
+        <div class="stat">
+          🟨 کارت زرد
+          <br>
+          <b>${player.yellow || 0}</b>
+        </div>
+
+        <div class="stat">
+          🟥 کارت قرمز
+          <br>
+          <b>${player.red || 0}</b>
+        </div>
+
+        <div class="stat">
+          🏟️ تیم
+          <br>
+          <b>${team ? team.name : teamName}</b>
+        </div>
+
+      </div>
 
     </div>
   `;
