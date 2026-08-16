@@ -1757,6 +1757,11 @@ ${
         🟨 ${p.yellow || 0}
         🟥 ${p.red || 0}
       </span>
+      <button
+  class="add"
+  onclick="transferPlayer('${team}', ${i})">
+  🔄 انتقال
+</button>
     </div>
   `).join("");
 }
@@ -1927,6 +1932,74 @@ ${
 
     </div>
   `;
+}
+  function transferPlayer(team, index){
+
+  const player = players[team][index];
+
+  if(!player){
+    alert("بازیکن پیدا نشد");
+    return;
+  }
+
+  const destinations =
+    teams
+      .map(t => t.name)
+      .filter(name => name !== team);
+
+  if(!destinations.length){
+    alert("تیم دیگری برای انتقال وجود ندارد");
+    return;
+  }
+
+  const list =
+    destinations
+      .map((name,i) => `${i + 1}. ${name}`)
+      .join("\n");
+
+  const choice = prompt(
+    "🔄 انتقال " + player.name +
+    "\n\nتیم مقصد را انتخاب کنید:\n\n" +
+    list +
+    "\n\nشماره تیم را وارد کنید:"
+  );
+
+  if(choice === null) return;
+
+  const indexTeam =
+    parseInt(choice) - 1;
+
+  if(
+    isNaN(indexTeam) ||
+    indexTeam < 0 ||
+    indexTeam >= destinations.length
+  ){
+    alert("شماره تیم صحیح نیست");
+    return;
+  }
+
+  const destination =
+    destinations[indexTeam];
+
+  if(!players[destination]){
+    players[destination] = [];
+  }
+
+  players[destination].push(player);
+
+  players[team].splice(index,1);
+
+  save();
+
+  alert(
+    "✅ " +
+    player.name +
+    " به تیم " +
+    destination +
+    " منتقل شد."
+  );
+
+  renderPlayers();
 }
 function render(){
 renderPlayers();
