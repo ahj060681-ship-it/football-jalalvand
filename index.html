@@ -65,7 +65,35 @@ th{color:#9db5a7}
 
   <div id="teamProfile"></div>
 </div>
+<div class="card">
+  <h2>👥 مدیریت بازیکنان</h2>
 
+  <select id="playerTeam"></select>
+
+  <input
+    id="playerName"
+    placeholder="نام بازیکن"
+  >
+
+  <input
+    id="playerNumber"
+    type="number"
+    placeholder="شماره پیراهن"
+  >
+
+  <select id="playerPosition">
+    <option value="دروازه‌بان">🧤 دروازه‌بان</option>
+    <option value="مدافع">🛡️ مدافع</option>
+    <option value="هافبک">⚙️ هافبک</option>
+    <option value="مهاجم">⚡ مهاجم</option>
+  </select>
+
+  <button class="add" onclick="addPlayer()">
+    ➕ افزودن بازیکن
+  </button>
+
+  <div id="playerList"></div>
+</div>
 <div class="card">
 <h2>🗂️ مدیریت گروه‌ها</h2>
 
@@ -203,7 +231,9 @@ JSON.parse(localStorage.getItem("jalalvandScorers"))
 let honors=
 JSON.parse(localStorage.getItem("jalalvandHonors"))
 ||{};
-
+let players=
+JSON.parse(localStorage.getItem("jalalvandPlayers"))
+||{};
 /* ذخیره */
 
 function save(){
@@ -435,7 +465,43 @@ save();
 
 /* مسابقه */
 function addHonor(){
+function addPlayer(){
 
+  const team =
+    document.getElementById("playerTeam").value;
+
+  const name =
+    document.getElementById("playerName").value.trim();
+
+  const number =
+    document.getElementById("playerNumber").value;
+
+  const position =
+    document.getElementById("playerPosition").value;
+
+  if(!team || !name){
+    alert("تیم و نام بازیکن را وارد کنید");
+    return;
+  }
+
+  if(!players[team]){
+    players[team] = [];
+  }
+
+  players[team].push({
+    name: name,
+    number: number,
+    position: position,
+    goals: 0,
+    yellow: 0,
+    red: 0
+  });
+
+  document.getElementById("playerName").value = "";
+  document.getElementById("playerNumber").value = "";
+
+  save();
+}
   let team = document.getElementById("honorTeam").value;
   let title = document.getElementById("honorTitle").value.trim();
   let year = document.getElementById("honorYear").value.trim();
@@ -871,7 +937,12 @@ document.getElementById("honorTeam").innerHTML =
   teams.map(t =>
     `<option value="${t.name}">${t.name}</option>`
   ).join("");
+document.getElementById("playerTeam").innerHTML =
+  teams.map(t =>
+    `<option value="${t.name}">${t.name}</option>`
+  ).join("");
 
+renderPlayers();
 showTeamProfile();
 h.innerHTML="";
 a.innerHTML="";
@@ -1462,7 +1533,45 @@ function renderHonors(){
     </div>
   `;
 }
+ function renderPlayers(){
+
+  const team =
+    document.getElementById("playerTeam").value;
+
+  const list =
+    players[team] || [];
+
+  const box =
+    document.getElementById("playerList");
+
+  if(!list.length){
+    box.innerHTML =
+      '<p class="muted">هنوز بازیکنی برای این تیم ثبت نشده است.</p>';
+    return;
+  }
+
+  box.innerHTML = list.map((p,i) => `
+    <div class="item">
+
+      <span>
+        <b>${p.number ? "#" + p.number + " " : ""}${p.name}</b>
+        <br>
+        <small class="muted">
+          ${p.position}
+        </small>
+      </span>
+
+      <span>
+        ⚽ ${p.goals}
+        🟨 ${p.yellow}
+        🟥 ${p.red}
+      </span>
+
+    </div>
+  `).join("");
+} 
 function render(){
+renderPlayers();
 renderHonors();
 renderGroups();
 showTeamProfile();
